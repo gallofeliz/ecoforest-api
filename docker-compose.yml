@@ -1,0 +1,11 @@
+ version: "3.5"
+
+ services:
+   api:
+     restart: unless-stopped
+     build:
+       context: .
+     environment:
+       ECOFOREST_URL: http://proxy-or-real
+       ECOFOREST_USERNAME: xxx
+       ECOFOREST_PASSWORD: yyy
