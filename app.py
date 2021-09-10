@@ -70,7 +70,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self.wfile.write(bytes(str(inst), 'utf8'))
             logging.exception('Request error')
 
-httpd = socketserver.TCPServer(('', 8080), Handler)
+port = int(os.environ.get('PORT', 80))
+httpd = socketserver.TCPServer(('', port), Handler)
 try:
    httpd.serve_forever()
 except KeyboardInterrupt:
