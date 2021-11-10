@@ -8,4 +8,4 @@ ADD app.py .
 
 USER nobody
 
-CMD ./app.py
+CMD python -u ./app.py
