@@ -21,7 +21,7 @@ def status_to_str(status):
     if status == 2 or status == 3 or status == 4 or status == 10:
         return 'starting'
     if status == 5 or status == 6:
-        return 'running' # ?
+        return 'running' # It's not fully starting because there is fire, but not fully running because there is no heat
     if status == 20:
         return 'standby'
 
@@ -80,7 +80,7 @@ def set_mode(mode):
     call_ecoforest({'idOperacion': '1081', 'modo_operacion': str(mode)})
 
 class Handler(http.server.BaseHTTPRequestHandler):
-    def do_POST(self):
+    def do_PUT(self):
         path = self.path.split('?')[0]
 
         try:
