@@ -71,7 +71,7 @@ def get_summary():
     }
 
 def set_power(power):
-    call_ecoforest({'idOperacion': '1004', 'potencia': str(temp)})
+    call_ecoforest({'idOperacion': '1004', 'potencia': str(power)})
 
 def set_status(onoff):
     call_ecoforest({'idOperacion': '1013', 'on_off': str(onoff)})
