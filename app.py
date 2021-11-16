@@ -80,11 +80,11 @@ def set_mode(mode):
     call_ecoforest({'idOperacion': '1081', 'modo_operacion': str(mode)})
 
 def set_convector(mode):
-    if mode == 'normal':
+    if mode == 'normal' or mode == '"normal"':
         value = 0
-    elif mode == 'lowest':
+    elif mode == 'lowest' or mode == '"lowest"':
         value = -15
-    elif mode == 'highest':
+    elif mode == 'highest' or mode == '"highest"':
         value = 15
     else:
         value = float(mode)
