@@ -79,6 +79,17 @@ def set_status(onoff):
 def set_mode(mode):
     call_ecoforest({'idOperacion': '1081', 'modo_operacion': str(mode)})
 
+def set_convector(mode):
+    if mode == 'normal':
+        value = 0
+    elif mode == 'lowest':
+        value = -15
+    elif mode == 'highest':
+        value = 15
+    else:
+        value = float(mode)
+    call_ecoforest({'idOperacion': '1054', 'delta_convector': str(value)})
+
 class Handler(http.server.BaseHTTPRequestHandler):
     def do_PUT(self):
         path = self.path.split('?')[0]
@@ -106,6 +117,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
                     target_mode = int(target_raw_mode)
 
                 set_mode(target_mode)
+            elif (path == '/convector'):
+                target_raw_mode = self.rfile.read(int(self.headers['Content-Length'])).decode('utf8')
+                set_convector(target_raw_mode)
             else:
                 self.send_response(404)
                 self.end_headers()
