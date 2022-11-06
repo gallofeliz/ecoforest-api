@@ -64,15 +64,16 @@ def call_ecoforest(data):
 def get_summary():
     data = call_ecoforest({'idOperacion': '1002'})
     data2 = call_ecoforest({'idOperacion': '1061'})
+    data3 = call_ecoforest({'idOperacion': '1020'})
 
     co = float(data2['Co'])
 
     if co < 0:
-        convectorSpeed = 'lowest'
+        targetConvector = 'lowest'
     elif co > 0:
-        convectorSpeed = 'highest'
+        targetConvector = 'highest'
     else:
-        convectorSpeed = 'normal'
+        targetConvector = 'normal'
 
     mode = 'temperature' if  data['modo_operacion'] == '1' else 'power'
     return {
@@ -81,7 +82,9 @@ def get_summary():
         'status': int(data['estado']),
         'humanStatus': status_to_str(int(data['estado'])),
         'mode': mode,
-        'convector': convectorSpeed,
+        'targetConvector': targetConvector,
+        'convectorSpeedPct': float(data3['Co']),
+        'burnTemperature': float(data3['Th']),
         **({ 'targetTemperature': float(data['consigna_temperatura']) } if mode == 'temperature' else { 'targetPower': int(data['consigna_potencia']) })
     }
 
@@ -94,7 +97,7 @@ def set_status(onoff):
 def set_mode(mode):
     call_ecoforest({'idOperacion': '1081', 'modo_operacion': str(mode)})
 
-def set_convector(mode):
+def set_target_convector(mode):
     if mode == 'normal' or mode == '"normal"':
         value = 0
     elif mode == 'lowest' or mode == '"lowest"':
@@ -124,31 +127,31 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
                     set_mode(0)
                     if target_scenario == 'soft1' or target_scenario == 'softest':
-                        set_convector('lowest')
+                        set_target_convector('lowest')
                         set_power(1)
                     if target_scenario == 'soft2' or target_scenario == 'soft':
-                        set_convector('lowest')
+                        set_target_convector('lowest')
                         set_power(2)
                     if target_scenario == 'soft3':
-                        set_convector('lowest')
+                        set_target_convector('lowest')
                         set_power(3)
                     if target_scenario == 'mid1':
-                        set_convector('normal')
+                        set_target_convector('normal')
                         set_power(4)
                     if target_scenario == 'mid2' or target_scenario == 'mid' or target_scenario == 'midst':
-                        set_convector('normal')
+                        set_target_convector('normal')
                         set_power(5)
                     if target_scenario == 'mid3':
-                        set_convector('normal')
+                        set_target_convector('normal')
                         set_power(6)
                     if target_scenario == 'hard1':
-                        set_convector('highest')
+                        set_target_convector('highest')
                         set_power(7)
                     if target_scenario == 'hard2' or target_scenario == 'hard':
-                        set_convector('highest')
+                        set_target_convector('highest')
                         set_power(8)
                     if target_scenario == 'hard3' or target_scenario == 'hardest':
-                        set_convector('highest')
+                        set_target_convector('highest')
                         set_power(9)
 
             elif (path == '/power'):
@@ -174,7 +177,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 set_mode(target_mode)
             elif (path == '/convector'):
                 target_raw_mode = self.rfile.read(int(self.headers['Content-Length'])).decode('utf8')
-                set_convector(target_raw_mode)
+                set_target_convector(target_raw_mode)
             else:
                 self.send_response(404)
                 self.end_headers()
