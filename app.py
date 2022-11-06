@@ -39,6 +39,9 @@ def call_ecoforest(data):
       )
     response.raise_for_status()
 
+    if (str(data['idOperacion']) == '1081'):
+        return {}
+
     lines = response.text.split('\n')
 
     code = lines.pop()
@@ -54,12 +57,23 @@ def call_ecoforest(data):
         else:
             key = line
             value = ''
-        data[key] = value
+        data[key.strip()] = value
 
     return data
 
 def get_summary():
     data = call_ecoforest({'idOperacion': '1002'})
+    data2 = call_ecoforest({'idOperacion': '1061'})
+
+    co = float(data2['Co'])
+
+    if co < 0:
+        convectorSpeed = 'lowest'
+    elif co > 0:
+        convectorSpeed = 'highest'
+    else:
+        convectorSpeed = 'normal'
+
     mode = 'temperature' if  data['modo_operacion'] == '1' else 'power'
     return {
         'temperature': None if data['temperatura'] == '--.-' else float(data['temperatura']),
@@ -67,6 +81,7 @@ def get_summary():
         'status': int(data['estado']),
         'humanStatus': status_to_str(int(data['estado'])),
         'mode': mode,
+        'convector': convectorSpeed,
         **({ 'targetTemperature': float(data['consigna_temperatura']) } if mode == 'temperature' else { 'targetPower': int(data['consigna_potencia']) })
     }
 
@@ -96,7 +111,47 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
         try:
             data = None
-            if (path == '/power'):
+            if (path == '/super-mode'):
+                target_scenario = self.rfile.read(int(self.headers['Content-Length'])).decode('utf8')
+
+                if target_scenario == 'off':
+                    set_status(0)
+                else:
+                    set_status(1)
+
+                    if target_scenario[0:4] == 'temp':
+                        raise Exception('Not handled tempX')
+
+                    set_mode(0)
+                    if target_scenario == 'soft1' or target_scenario == 'softest':
+                        set_convector('lowest')
+                        set_power(1)
+                    if target_scenario == 'soft2' or target_scenario == 'soft':
+                        set_convector('lowest')
+                        set_power(2)
+                    if target_scenario == 'soft3':
+                        set_convector('lowest')
+                        set_power(3)
+                    if target_scenario == 'mid1':
+                        set_convector('normal')
+                        set_power(4)
+                    if target_scenario == 'mid2' or target_scenario == 'mid' or target_scenario == 'midst':
+                        set_convector('normal')
+                        set_power(5)
+                    if target_scenario == 'mid3':
+                        set_convector('normal')
+                        set_power(6)
+                    if target_scenario == 'hard1':
+                        set_convector('highest')
+                        set_power(7)
+                    if target_scenario == 'hard2' or target_scenario == 'hard':
+                        set_convector('highest')
+                        set_power(8)
+                    if target_scenario == 'hard3' or target_scenario == 'hardest':
+                        set_convector('highest')
+                        set_power(9)
+
+            elif (path == '/power'):
                 target_power = self.rfile.read(int(self.headers['Content-Length'])).decode('utf8')
                 set_power(target_power)
             elif (path == '/status'):
