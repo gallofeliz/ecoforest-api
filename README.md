@@ -11,13 +11,15 @@ Call /summary and have
     status: 7,
     humanStatus: 'running',
     mode: 'power',
-    targetPower: 5
+    targetPower: 5,
+    convectorSpeedPct: 71,
+    burnTemperature: 222
 }
 ```
 
 Others endpoints are available to control the stove.
 
-## Super mode
+## Super mode
 
 Call /super-mode with :
 - softest/soft/soft1/soft2/soft3 : power 1, 2, 3 with slow convection -> silence !
