@@ -4,7 +4,7 @@ See docker-compose.yml ; option ECOFOREST_USERNAME/PASSWORD if proxy (without au
 
 Call /summary and have
 
-```
+```js
 {
     temperature: 19.1,
     power: 5,
