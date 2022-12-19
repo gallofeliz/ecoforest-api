@@ -1,4 +1,4 @@
-# Smart Stove
+# Ecoforest API
 
 See docker-compose.yml ; option ECOFOREST_USERNAME/PASSWORD if proxy (without auth) is used
 
